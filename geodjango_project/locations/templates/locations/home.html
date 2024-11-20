@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GeoTest</title>
+</head>
+<body>
+    <h1>GeoTest Points</h1>
+    <ul>
+    {% for point in points %}
+        <li>{{ point.name }}: {{ point.location.x }}, {{ point.location.y }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
