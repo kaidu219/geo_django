@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GeoTest</title>
+</head>
+<body>
+    <h1>GeoTest Points</h1>
+    <ul>
+    {% for point in points %}
+        <li>{{ point.name }}: {{ point.location.x }}, {{ point.location.y }}</li>
+    {% endfor %}
+    </ul>
+
+    <div id="map" style="width: 100%; height: 500px;"></div>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+<script>
+    var map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    
+    {% for location in locations %}
+    L.marker([{{ location.point.y }}, {{ location.point.x }}])
+        .bindPopup("{{ location.name }}")
+        .addTo(map);
+    {% endfor %}
+</script>
+</body>
+</html>
