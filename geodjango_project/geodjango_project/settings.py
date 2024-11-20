@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    
+    # установил
     'django.contrib.gis',
 
+    # создал
     'locations',
 ]
 
@@ -78,8 +80,7 @@ WSGI_APPLICATION = 'geodjango_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# GDAL_LIBRARY_PATH = os.path.join('/opt/homebrew/Cellar/gdal/3.10.0_1/lib/libgdal.dylib', '/opt/homebrew/lib/libgdal.dylib')
-
+# необходимые пути, которые нужны для нормальной работы БД
 GEOS_LIBRARY_PATH = '/opt/homebrew/lib/libgeos_c.dylib'
 GDAL_LIBRARY_PATH = '/opt/homebrew/lib/libgdal.dylib'
 SPATIALITE_LIBRARY_PATH = '/opt/homebrew/lib/mod_spatialite.dylib'
