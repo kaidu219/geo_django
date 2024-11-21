@@ -17,9 +17,40 @@
             background-color: #f8f9fa;
             border-radius: 5px;
         }
+        .form-container {
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .btn-submit {
+            width: 100%;
+        }
+        .map-info {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .location-list-table th, .location-list-table td {
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
+    <div class="container mt-4">
+        <form method="POST" action="{% url 'location_list' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="search_query" class="form-label">Найти город</label>
+                <input type="text" name="search_query" class="form-control" placeholder="Введите название города">
+            </div>
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </form>
+    </div>
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-8">
@@ -28,12 +59,30 @@
             <div class="col-md-4">
                 <div class="form-container">
                     <h3>Добавить локацию</h3>
-                        <form method="POST" action="{% url 'location_list' %}">
-                            {% csrf_token %}
-                            
-                            {{ form.as_p }} 
-                            <button type="submit" class="btn btn-primary">Добавить локацию</button>
-                        </form>
+                    <form method="POST" action="{% url 'location_list' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label">Название</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">Описание</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_latitude" class="form-label">Широта</label>
+                            {{ form.latitude }}
+                            <div class="map-info">Введите значение от -90 до 90</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_longitude" class="form-label">Долгота</label>
+                            {{ form.longitude }}
+                            <div class="map-info">Введите значение от -180 до 180</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-submit">Добавить локацию</button>
+                    </form>
+                    
                 </div>
             </div>
             <div class="col-md-12">
@@ -68,6 +117,30 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <h3>История поиска</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Город</th>
+                            <th>Широта</th>
+                            <th>Долгота</th>
+                            <th>Запрос</th>
+                            <th>Дата поиска</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city in city %}
+                        <tr>
+                            <td>{{ city.city_name }}</td>
+                            <td>{{ city.point.y }}</td>
+                            <td>{{ city.point.x }}</td>
+                            <td>{{ city.search_query }}</td>
+                            <td>{{ city.created_at|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
             </div>
 
         </div>
@@ -75,14 +148,28 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        // чисто для отображения карты
         var map = L.map('map').setView([0, 0], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        // для отображение точек на карте
+    
+        // Существующие локации
         {% for location in locations %}
         var marker = L.marker([{{ location.point.y }}, {{ location.point.x }}]).addTo(map);
         marker.bindPopup("<b>{{ location.name }}</b><br>{{ location.description }}");
         {% endfor %}
+
+        {% for city in city %}
+        var marker = L.marker([{{ city.point.y }}, {{ city.point.x }}]).addTo(map);
+        marker.bindPopup("<b>{{ city.city_name }}</b>");
+        {% endfor %}
+
+        if (searchMarkers.length > 0) {
+            var bounds = L.latLngBounds(searchMarkers);
+            map.fitBounds(bounds);
+        }
     </script>
+    
+    
+
+    
 </body>
 </html>
